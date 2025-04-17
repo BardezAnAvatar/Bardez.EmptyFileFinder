@@ -27,11 +27,14 @@ internal class EmptyReporter : IDisposable
         _stream.Close();
         _stream.Dispose();
         _slim.Dispose();
+        _fileLock.Dispose();
     }
 
     internal async Task CheckForEmptyFiles(CancellationToken cancel)
     {
         var current = Directory.GetCurrentDirectory();
+        _stream.WriteLine($"Evaluating `{current}`:");
+
         var dirInfo = new DirectoryInfo(current);
         var tasks = ReadDirectory(dirInfo, cancel);
 
@@ -41,6 +44,8 @@ internal class EmptyReporter : IDisposable
 
     internal async Task CheckForEmptyFiles(string path, CancellationToken cancel)
     {
+        _stream.WriteLine($"Evaluating `{path}`:");
+
         var dirInfo = new DirectoryInfo(path);
         var tasks = ReadDirectory(dirInfo, cancel);
 
