@@ -71,7 +71,7 @@ internal class EmptyReporter : IDisposable
         foreach (var dir in directories)
         {
             var dirTasks = ReadDirectory(dir, cancel);
-            tasks.AddRange(tasks);
+            tasks.AddRange(dirTasks);
         }
 
         return tasks;
@@ -111,7 +111,9 @@ internal class EmptyReporter : IDisposable
     internal async Task ReportNulFile(FileInfo file)
     { 
         await _fileLock.WaitAsync();
-        await _stream.WriteLineAsync($"NUL Contents: {file}");
+        var message = $"NUL Contents: {file}";
+        Console.WriteLine(message);
+        await _stream.WriteLineAsync(message);
         _fileLock.Release();
     }
 }
