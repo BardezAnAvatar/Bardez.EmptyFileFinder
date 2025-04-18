@@ -5,15 +5,19 @@ namespace Bardez.EmptyFileFinder.Business;
 
 internal class Checker(EmptyReporter emptyFileReporter, IOptions<CheckerOptions> options)
 {
-    internal static async Task CheckForEmptyFiles(CancellationToken cancel)
+    internal async Task CheckForEmptyFiles(bool useCurrentDir, CancellationToken cancel)
     {
-        using EmptyReporter emptyFileReporter = new EmptyReporter();
-        await emptyFileReporter.CheckForEmptyFiles(cancel);
-    }
+        var path = useCurrentDir ? Directory.GetCurrentDirectory() : options.Value.Path;
 
-    internal static async Task CheckForEmptyFiles(string path, CancellationToken cancel)
-    {
-        using EmptyReporter emptyFileReporter = new EmptyReporter();
+        Console.WriteLine(DateTimeOffset.UtcNow);
+        Console.WriteLine($"Evaluating `{path}` ...");
+        Console.WriteLine("Checking for NUL-only files...");
+
         await emptyFileReporter.CheckForEmptyFiles(path, cancel);
+
+        Console.WriteLine(string.Empty);
+        Console.WriteLine(string.Empty);
+        Console.WriteLine("Process complete!");
+        Console.WriteLine(DateTimeOffset.UtcNow);
     }
 }
