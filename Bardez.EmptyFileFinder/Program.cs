@@ -1,11 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Bardez.EmptyFileFinder;
+using Bardez.EmptyFileFinder.Business;
+using Bardez.EmptyFileFinder.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-Console.WriteLine("Checking for NUL-only files...");
+var builder = Host.CreateApplicationBuilder();
 
-//await Checker.CheckForEmptyFiles(CancellationToken.None);
-//await Checker.CheckForEmptyFiles("\\\\bardezserver2\\Storage\\Games\\Infinity & Aurora Engine\\", CancellationToken.None);
+//Dependency Injection
+builder.Services.AddTransient<EmptyReporter>();
+builder.Services.Configure<CheckerOptions>(builder.Configuration.GetSection(CheckerOptions.ConfigurationSection));
 
-Console.WriteLine(string.Empty);
-Console.WriteLine(string.Empty);
-Console.WriteLine("Process complete!");
+using IHost host = builder.Build();
+var checker = host.Services.GetRequiredService<Checker>();
+await checker.CheckForEmptyFiles(false, CancellationToken.None);
