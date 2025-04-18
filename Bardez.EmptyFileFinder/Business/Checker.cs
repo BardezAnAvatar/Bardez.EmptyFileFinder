@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using Bardez.EmptyFileFinder.Configuration;
+using Microsoft.Extensions.Options;
 
-namespace Bardez.EmptyFileFinder;
+namespace Bardez.EmptyFileFinder.Business;
 
-internal class Checker
+internal class Checker(EmptyReporter emptyFileReporter, IOptions<CheckerOptions> options)
 {
     internal static async Task CheckForEmptyFiles(CancellationToken cancel)
     {
