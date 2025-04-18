@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Bardez.EmptyFileFinder;
+namespace Bardez.EmptyFileFinder.Business;
 
 internal class EmptyReporter : IDisposable
 {
@@ -28,18 +28,6 @@ internal class EmptyReporter : IDisposable
         _stream.Dispose();
         _slim.Dispose();
         _fileLock.Dispose();
-    }
-
-    internal async Task CheckForEmptyFiles(CancellationToken cancel)
-    {
-        var current = Directory.GetCurrentDirectory();
-        _stream.WriteLine($"Evaluating `{current}`:");
-
-        var dirInfo = new DirectoryInfo(current);
-        var tasks = ReadDirectory(dirInfo, cancel);
-
-        //wait for it all
-        await Task.WhenAll(tasks);
     }
 
     internal async Task CheckForEmptyFiles(string path, CancellationToken cancel)
@@ -109,7 +97,7 @@ internal class EmptyReporter : IDisposable
     }
 
     internal async Task ReportNulFile(FileInfo file)
-    { 
+    {
         await _fileLock.WaitAsync();
         var message = $"NUL Contents: {file}";
         Console.WriteLine(message);
