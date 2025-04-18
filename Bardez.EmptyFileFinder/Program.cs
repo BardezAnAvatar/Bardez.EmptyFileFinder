@@ -5,4 +5,7 @@ Console.WriteLine("Checking for NUL-only files...");
 
 //await Checker.CheckForEmptyFiles(CancellationToken.None);
 //await Checker.CheckForEmptyFiles("\\\\bardezserver2\\Storage\\Games\\Infinity & Aurora Engine\\", CancellationToken.None);
-await Checker.CheckForEmptyFiles("\\\\bardezserver2\\Storage\\Backup", CancellationToken.None);
+
+Console.WriteLine(string.Empty);
+Console.WriteLine(string.Empty);
+Console.WriteLine("Process complete!");
