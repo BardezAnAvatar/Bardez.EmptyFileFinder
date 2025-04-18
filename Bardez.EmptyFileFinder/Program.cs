@@ -8,6 +8,7 @@ var builder = Host.CreateApplicationBuilder();
 
 //Dependency Injection
 builder.Services.AddTransient<EmptyReporter>();
+builder.Services.AddTransient<Checker>();
 builder.Services.Configure<CheckerOptions>(builder.Configuration.GetSection(CheckerOptions.ConfigurationSection));
 
 using IHost host = builder.Build();
