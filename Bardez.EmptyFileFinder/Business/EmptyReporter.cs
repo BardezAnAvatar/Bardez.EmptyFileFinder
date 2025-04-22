@@ -68,14 +68,14 @@ internal class EmptyReporter : IDisposable
     private async Task ReadFile(FileInfo file, CancellationToken cancel)
     {
         await _slim.WaitAsync();
-        using var fileHandle = file.OpenRead();
-        if (fileHandle != null)
+        if (file.Length == 0)
         {
-            if (fileHandle.Length == 0)
-            {
-                await ReportZeroByteFile(file);
-            }
-            else if (fileHandle.CanRead)
+            await ReportZeroByteFile(file);
+        }
+        else
+        {
+            using var fileHandle = file.OpenRead();
+            if (fileHandle != null && fileHandle.CanRead)
             {
                 var empty = true;
 
