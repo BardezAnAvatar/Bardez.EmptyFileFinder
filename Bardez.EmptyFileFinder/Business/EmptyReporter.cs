@@ -69,27 +69,34 @@ internal class EmptyReporter : IDisposable
     {
         await _slim.WaitAsync();
         using var fileHandle = file.OpenRead();
-        if (fileHandle != null && fileHandle.CanRead)
+        if (fileHandle != null)
         {
-            var empty = true;
-
-            byte[] data = new byte[16_777_216]; //16 MB
-            while (fileHandle.Position < file.Length && empty)  //while I can read && all I have found is empty bytes
+            if (fileHandle.Length == 0)
             {
-                var amount = await fileHandle.ReadAsync(data, 0, 16_777_216, cancel);
-                for (int i = 0; i < amount && empty; i++)
+                await ReportZeroByteFile(file);
+            }
+            else if (fileHandle.CanRead)
+            {
+                var empty = true;
+
+                byte[] data = new byte[16_777_216]; //16 MB
+                while (fileHandle.Position < file.Length && empty)  //while I can read && all I have found is empty bytes
                 {
-                    if (data[i] != 0)
+                    var amount = await fileHandle.ReadAsync(data, 0, 16_777_216, cancel);
+                    for (int i = 0; i < amount && empty; i++)
                     {
-                        empty = false;
+                        if (data[i] != 0)
+                        {
+                            empty = false;
+                        }
                     }
                 }
-            }
 
-            //if I'm here, I've escaped or the file is empty
-            if (empty)
-            {
-                await ReportNulFile(file);
+                //if I'm here, I've escaped or the file is empty
+                if (empty)
+                {
+                    await ReportNulFile(file);
+                }
             }
         }
 
@@ -100,6 +107,15 @@ internal class EmptyReporter : IDisposable
     {
         await _fileLock.WaitAsync();
         var message = $"NUL Contents: {file}";
+        Console.WriteLine(message);
+        await _stream.WriteLineAsync(message);
+        _fileLock.Release();
+    }
+
+    internal async Task ReportZeroByteFile(FileInfo file)
+    {
+        await _fileLock.WaitAsync();
+        var message = $"Zero length:  {file}";
         Console.WriteLine(message);
         await _stream.WriteLineAsync(message);
         _fileLock.Release();
