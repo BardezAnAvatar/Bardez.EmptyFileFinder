@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Bardez.EmptyFileFinder.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Bardez.EmptyFileFinder.Business;
 
@@ -7,13 +9,15 @@ internal class EmptyReporter : IDisposable
     private readonly StreamWriter _stream;
     private readonly SemaphoreSlim _slim = new SemaphoreSlim(20);
     private readonly SemaphoreSlim _fileLock = new SemaphoreSlim(1);
+    private readonly CheckerOptions _options;
 
-    public EmptyReporter()
+    public EmptyReporter(IOptions<CheckerOptions> options)
     {
         var current = Directory.GetCurrentDirectory();
         var report = $"Report-{DateTime.Now.ToUniversalTime().ToString("yyyyMMdd_hhmmssss")}.log";
         var reportPath = Path.Combine(current, report);
         _stream = File.CreateText(reportPath);
+        _options = options.Value;
     }
 
     ~EmptyReporter()
@@ -70,7 +74,10 @@ internal class EmptyReporter : IDisposable
         await _slim.WaitAsync();
         if (file.Length == 0)
         {
-            await ReportZeroByteFile(file);
+            if (_options.ReportZeroLength)
+            {
+                await ReportZeroByteFile(file);
+            }
         }
         else
         {

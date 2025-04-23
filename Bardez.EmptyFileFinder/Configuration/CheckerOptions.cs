@@ -8,6 +8,8 @@ namespace Bardez.EmptyFileFinder.Configuration
 
         public string Path { get; set; } = string.Empty;
 
+        public bool ReportZeroLength { get; set; }
+
         public CheckerOptions Value => this;
     }
 }
